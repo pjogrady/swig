@@ -5589,6 +5589,11 @@ int PYTHON::classDirectorMethod(Node *n, Node *parent, String *super) {
     Append(w->code, "if (!swig_get_self()) {\n");
     Printf(w->code, "  Swig::DirectorException::raise(\"'self' uninitialized, maybe you forgot to call %s.__init__.\");\n", classname);
     Append(w->code, "}\n");
+
+    Append(w->code, "/* HERE */;\n") ;
+    Append(w->code, "PyObject *val = NULL, *type = NULL, *tb = NULL;\n") ;
+    Append(w->code, "PyErr_Fetch(&val, &type, &tb);\n") ;
+
     Append(w->code, "#if defined(SWIG_PYTHON_DIRECTOR_VTABLE)\n");
     Printf(w->code, "const size_t swig_method_index = %d;\n", director_method_index++);
     Printf(w->code, "const char *const swig_method_name = \"%s\";\n", pyname);
@@ -5732,6 +5737,9 @@ int PYTHON::classDirectorMethod(Node *n, Node *parent, String *super) {
     Delete(cleanup);
     Delete(outarg);
   }
+
+  Append(w->code, "  /* THERE */;\n");
+  Append(w->code, "PyErr_Restore(val, type, tb);\n") ;
 
   if (!is_void) {
     if (!(ignored_method && !pure_virtual)) {
